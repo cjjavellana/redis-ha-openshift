@@ -13,6 +13,10 @@ RUN yum install -y make && \
 	yum install -y jemalloc-devel && \
 	cp /app/usr/redis/redis-4.0.9.tar.gz/redis-4.0.9/redis.conf /etc/redis.conf && \
 	cp /app/usr/redis/redis-4.0.9.tar.gz/redis-4.0.9/sentinel.conf /etc/sentinel.conf && \
+	sed -i -e 's/sentinel monitor mymaster/# sentinel monitor mymaster/g' /etc/sentinel.conf && \
+	sed -i '/sentinel monitor mymaster/a sentinel monitor mymaster $MASTER_HOST $MASTER_PORT $QUOROM' /etc/sentinel.conf && \
+	echo 'sentinel announce-ip $ANNOUNCE_IP' >> /etc/sentinel.conf && \
+	echo 'sentinel announce-port $ANNOUNCE_PORT' >> /etc/sentinel.conf && \
 	cd /app/usr/redis/redis-4.0.9.tar.gz/redis-4.0.9 && \
 	make && \
 	make install prefix=/usr/local/bin
